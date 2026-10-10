@@ -1,0 +1,25 @@
+# Evaluator sanity under the STUDY protocol: native-resolution ground truth, no resize, no crop
+# (official MVTec evaluation convention; DECISIONS.md D-006). Memory-heavy but CPU-only.
+tool: evaluator_sanity
+schema_version: 1
+extracted_dirname: mvtec_ad
+categories: [bottle, cable, capsule, carpet, grid, hazelnut, leather, metal_nut, pill, screw, tile, toothbrush, transistor, wood, zipper]
+kinds: [constant, oracle_mask]
+geometry:
+  name: native_full_image
+  resize: null
+  crop: null
+  image_interp: bilinear
+  mask_interp: nearest
+  mask_threshold: 0.5
+metric:
+  pro_integration_limit: 0.3
+  connectivity: 8
+  category_average: macro
+strata:
+  # PRE-REGISTERED (REALITY_CHECK H-01, 2026-10-11): S <0.1%, M 0.1-1%, L >=1% of image pixels
+  area_fraction_edges: [0.0, 0.001, 0.01, 1.0]
+  labels: [S, M, L]
+  min_images_per_cell: 10
+  min_images_pooled: 30
+seed: 0

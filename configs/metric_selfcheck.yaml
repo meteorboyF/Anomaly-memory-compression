@@ -1,0 +1,7 @@
+# Metric replica vs the vendored official MVTec AD evaluation code (no data needed).
+tool: metric_selfcheck
+schema_version: 1
+n_random_cases: 200
+tolerance: 1.0e-6
+integration_limit: 0.3
+seed: 0

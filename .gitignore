@@ -1,0 +1,45 @@
+# Root-anchored: never ignore src/anomaly_memory/data/ (unanchored "data/" once
+# silently dropped a package's data subpackage; guarded by tests/test_imports.py).
+/data/
+/datasets/
+/artifacts/
+/checkpoints/
+/outputs/
+/runs/
+
+# environments and caches
+/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# heavy artifact formats (also refused by the pre-commit hook)
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.tar
+*.tar.xz
+*.zip
+*.faiss
+
+# LaTeX build products (paper/main.pdf is built, not committed)
+/paper/*.aux
+/paper/*.bbl
+/paper/*.blg
+/paper/*.log
+/paper/*.out
+/paper/*.fls
+/paper/*.fdb_latexmk
+/paper/*.spl
+/paper/*.synctex.gz
+/paper/main.pdf
+
+# secrets
+.env
+*.pem
+*.key

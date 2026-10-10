@@ -1,0 +1,5 @@
+# Accelerator allocations. An entry becomes status: approved ONLY after the
+# researcher approves a specific CU ceiling in chat. rate_cu_per_hour must be
+# the rate displayed in the researcher's own Colab session (no invented
+# conversion). max_wall_hours * rate_cu_per_hour must not exceed cu_ceiling.
+allocations: []

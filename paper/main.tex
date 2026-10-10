@@ -1,0 +1,159 @@
+%% Manuscript skeleton on Elsevier's official elsarticle class (v3.5, 2026/01/09).
+%% Target: Pattern Recognition or Neurocomputing (docs/DECISIONS.md D-010).
+%% Every number comes from generated/results_macros.tex (scripts/make_tables.py);
+%% no result is typed by hand. Writing order: Related Work (Phase 0) ->
+%% Method/Experiments (Phase 1) -> Results (Phase 2, per supported claim) ->
+%% Introduction and Abstract last.
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}  % Type 1 fonts: vector, embeddable
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\input{generated/results_macros.tex}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\journal{Pattern Recognition}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Does memory compression cost small defects? A controlled study of
+normal-feature memory banks in industrial anomaly detection\tnoteref{t1}}
+\tnotetext[t1]{Working title. The claim is restricted to what
+\texttt{docs/CLAIMS.md} supports at submission.}
+
+\author{\todo{author name}}
+\address{\todo{affiliation}}
+
+\begin{abstract}
+\todo{Written last, from supported claims only.}
+\end{abstract}
+
+\begin{keyword}
+industrial anomaly detection \sep memory bank \sep coreset \sep
+defect size \sep evaluation protocol \sep MVTec AD
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}\label{sec:intro}
+\todo{Written last. Contribution list = the supported rows of CLAIMS.md.}
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Memory-bank anomaly detection and its compression}
+Training-free memory-bank detectors score a test patch by its distance to a
+bank of normal training-patch features. PatchCore~\citep{roth2022patchcore}
+made this the standard industrial baseline. It aggregates locally pooled
+mid-level features of an ImageNet-pretrained backbone and reduces the bank
+with an approximate greedy $k$-centre coreset. The authors report that the
+coreset leaves mean image- and pixel-level performance on MVTec
+AD~\citep{bergmann2019mvtec,bergmann2021mvtec} almost unchanged down to a
+1\,\% bank. Later work treats this robustness as a premise for
+memory-efficient variants:
+\begin{itemize}
+\item automatic choice of the coreset size~\citep{kamiya2026aso};
+\item early-stopped and multi-class lite banks~\citep{lardon2026lite};
+\item product-quantised memories for edge deployment~\citep{stropeni2026edge};
+\item hierarchical prototype memories with residual normal patches that
+restore coverage of under-represented patterns~\citep{feng2026hrpro};
+\item density-based coresets motivated by sub-millimetre
+defects~\citep{deng2026cpdpatchcore}.
+\end{itemize}
+Training-free successors refine how the bank is read rather than how large
+it is. ProCon~\citep{chae2026procon} replaces nearest-neighbour lookup with
+soft projections onto seed-perturbed banks and reports that pixel-level
+performance saturates at a 5\,\% budget. Controlled studies of bank
+composition compare random, medoid and farthest-first selectors at matched
+bank size, but measure contamination rather than defect
+size~\citep{chae2026memorycomposition}. Across these works the effect of
+compression is measured with aggregate metrics only.
+
+\paragraph{Defect size and evaluation}
+The per-region overlap (PRO) curve weights every connected defect region
+equally, and its normalised area up to a false-positive rate of
+0.3~\citep{bergmann2020uninformed,bergmann2021mvtec} is the standard
+localisation metric on MVTec AD. Pixel-level ROC, in contrast, is dominated
+by large defects, which motivated the stricter 0.05 limit adopted for MVTec
+AD~2~\citep{hecklerkram2026mvtecad2}. Size-conditioned evaluation already
+exists:
+\begin{itemize}
+\item cumulative size-quartile AU-PRO and a size-robustness index, which
+show larger size sensitivity on VisA than on MVTec AD for a PatchCore
+evaluated at its default memory~\citep{costanzino2025pinpoint};
+\item per-image overlap metrics and analyses of region-size
+distributions~\citep{bertoldo2024aupimo};
+\item synthetic studies of the minimum detectable defect
+size~\citep{lehr2024limitations}.
+\end{itemize}
+Few-shot evaluation on MVTec AD~2, a benchmark with many small defects,
+reports that greedy coreset references degrade pixel-level
+results~\citep{tu2026fewshotmvtecad2}.
+\todo{Read the full texts of \citet{tu2026fewshotmvtecad2} and
+\citet{feng2026hrpro} before submission; refine both sentences.}
+
+\paragraph{Protocol variation}
+Published numbers on MVTec AD are often not comparable. Implementations
+differ in four ways:
+\begin{itemize}
+\item centre cropping and the resolution at which ground truth is evaluated;
+\item how masks are resampled;
+\item the PRO normalisation (by the integration limit or by the last
+attained false-positive rate);
+\item whether PRO is computed over all test images or anomalous images only.
+\end{itemize}
+EfficientAD~\citep{batzner2024efficientad} re-evaluated competitors without
+cropping using the official script. Benchmark critiques document further
+inconsistencies~\citep{baitieva2025beyond,rochner2025rethink}. We therefore
+fix and report the protocol explicitly (Section~\ref{sec:protocol}).
+
+\paragraph{Gap}
+No study we found conditions the effect of memory compression on defect
+size at matched memory bytes, with selector controls and seed replication.
+This is the gap the present study addresses; its search log is in the
+repository (\texttt{docs/LITERATURE.md}).
+
+\section{Experimental protocol}\label{sec:protocol}
+\todo{Phase 1: P-REPRO and P-STUDY definitions (DECISIONS D-004/D-005),
+pre-registered strata (REALITY\_CHECK H-01), byte accounting (D-012).}
+
+\begin{table}[t]
+\centering
+\caption{MVTec AD as profiled by our pipeline (generated from manifests).
+Median defect area is the per-image native-resolution fraction.}
+\label{tab:dataset}
+\small
+\input{generated/table_dataset.tex}
+\end{table}
+
+\section{Method under study}\label{sec:method}
+\todo{Phase 1: PatchCore as reproduced; selectors; memory accounting.}
+
+\section{Results}\label{sec:results}
+\todo{Phase 2: one subsection per supported claim. Evaluator sanity:
+constant AU-PRO \SanityConstantAUPRO, oracle AU-PRO \SanityOracleAUPRO.}
+
+\section{Limitations}\label{sec:limitations}
+\todo{Single benchmark; MVTec AD reported as comparatively size-stable;
+training-free memory detectors only.}
+
+\section{Conclusion}\label{sec:conclusion}
+\todo{Written last.}
+
+\section*{Data and code availability}
+MVTec AD is available from MVTec Software GmbH under CC BY-NC-SA 4.0 and is
+not redistributed. Code, configurations, download and verification scripts,
+and the scripts that generate every figure and table are available at
+\url{https://github.com/meteorboyF/Anomaly-memory-compression}
+\todo{match the journal's required wording}.
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{refs}
+
+\end{document}

@@ -1,0 +1,5 @@
+# Accelerator dependencies (Phase 1; PROVISIONAL until the baseline protocol is
+# frozen). torch/torchvision are used as preinstalled by Colab (recorded in
+# manifests), not upgraded. faiss is added here only after the approved pilot
+# confirms which build works on the chosen GPU.
+timm>=0.9

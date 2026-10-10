@@ -1,0 +1,6 @@
+# Phase approvals. Changed ONLY after the researcher approves in chat.
+phase0_approved: false
+phase1_approved: false
+phase2_approved: false
+approved_on: {}
+notes: "Phase 0 in progress (2026-10-11). No accelerator use is permitted."

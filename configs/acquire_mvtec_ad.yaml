@@ -1,0 +1,35 @@
+# Acquire original MVTec AD (whole archive). Verified 2026-10-11 (docs/DATA.md):
+# licence CC BY-NC-SA 4.0; downloads page lists direct links; server reports
+# Content-Length 5264982680, ETag "6127347e-139d14298", Last-Modified 2021-08-26;
+# NO publisher checksum is provided, so publisher_* stay null and only our own
+# SHA-256 is recorded (clearly labelled as ours).
+tool: acquire_data
+schema_version: 1
+dataset: mvtec_ad
+downloads_page: https://www.mvtec.com/research-teaching/datasets/mvtec-ad/downloads
+archive_name: mvtec_anomaly_detection.tar.xz
+fallback_url: https://www.mydrive.ch/shares/150996/b52ecdcbf521176e9db9c731f2304b27/download/420938113-1629960298/mvtec_anomaly_detection.tar.xz
+expected_bytes: 5264982680
+extracted_bytes_estimate: 6442450944
+publisher_sha256: null
+publisher_md5: null
+extracted_dirname: mvtec_ad
+categories: [bottle, cable, capsule, carpet, grid, hazelnut, leather, metal_nut, pill, screw, tile, toothbrush, transistor, wood, zipper]
+expected_counts:   # published: Bergmann et al., IJCV 2021, Table 1 (totals 3629/467/1258)
+  bottle: {train_good: 209, test_good: 20, test_defect: 63}
+  cable: {train_good: 224, test_good: 58, test_defect: 92}
+  capsule: {train_good: 219, test_good: 23, test_defect: 109}
+  carpet: {train_good: 280, test_good: 28, test_defect: 89}
+  grid: {train_good: 264, test_good: 21, test_defect: 57}
+  hazelnut: {train_good: 391, test_good: 40, test_defect: 70}
+  leather: {train_good: 245, test_good: 32, test_defect: 92}
+  metal_nut: {train_good: 220, test_good: 22, test_defect: 93}
+  pill: {train_good: 267, test_good: 26, test_defect: 141}
+  screw: {train_good: 320, test_good: 41, test_defect: 119}
+  tile: {train_good: 230, test_good: 33, test_defect: 84}
+  toothbrush: {train_good: 60, test_good: 12, test_defect: 30}
+  transistor: {train_good: 213, test_good: 60, test_defect: 40}
+  wood: {train_good: 247, test_good: 19, test_defect: 60}
+  zipper: {train_good: 240, test_good: 32, test_defect: 119}
+max_retries: 5
+timeout_s: 60.0

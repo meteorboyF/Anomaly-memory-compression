@@ -1,0 +1,27 @@
+# PROVISIONAL (Phase 1). predictions_run is filled when a complete baseline run exists.
+tool: evaluate
+schema_version: 1
+predictions_run: run_baseline/REPLACE_WITH_RUN_ID
+extracted_dirname: mvtec_ad
+categories: [bottle, cable, capsule, carpet, grid, hazelnut, leather, metal_nut, pill, screw, tile, toothbrush, transistor, wood, zipper]
+geometry:
+  # PatchCore official preprocessing (datasets/mvtec.py): Resize(256) -> CenterCrop(224) for image AND
+  # mask; torchvision bilinear on the PIL mask, then .astype(int) floors partial pixels -> only fully
+  # covered pixels stay anomalous (threshold 0.999 reproduces the floor of k/255).
+  name: patchcore_repro_r256_c224
+  resize: 256
+  crop: 224
+  image_interp: bilinear
+  mask_interp: bilinear
+  mask_threshold: 0.999
+metric:
+  pro_integration_limit: 0.3
+  connectivity: 8
+  category_average: macro
+strata:
+  # PRE-REGISTERED (REALITY_CHECK H-01, 2026-10-11): S <0.1%, M 0.1-1%, L >=1% of image pixels
+  area_fraction_edges: [0.0, 0.001, 0.01, 1.0]
+  labels: [S, M, L]
+  min_images_per_cell: 10
+  min_images_pooled: 30
+require_clean_git: true

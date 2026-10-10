@@ -1,0 +1,10 @@
+# PROVISIONAL (Phase 1). Blocked by gate + allocation.
+tool: run_baseline
+schema_version: 1
+features_config: patchcore_features
+method: patchcore_greedy_coreset
+coreset_ratio: 0.1
+projection_dim: 128
+neighbours: 1
+seeds: [0, 1, 2]
+est_gpu_hours: 0.5
