@@ -11,66 +11,70 @@ Next delta sweeps: at the Phase 1 → 2 boundary, and **~2026-11-08** targeted
 at the Chae group (ProCon / memory-composition line) and "coreset AND defect
 size", and within 2 weeks of submission.
 
-## 1. Novelty verdict (Phase 0): **CROWDED — rescoped**
+## 1. Novelty verdict (Phase 0, revised 2026-10-11): **CROWDED — rescoped to an empirical study**
 
-The diagnostic claim (memory compression × defect-size sensitivity at matched
-bytes, category-controlled) has **no direct prior measurement** in anything we
-found; but every ingredient exists separately, and the proposed correction
-direction is already occupied. Per the playbook this is *Crowded*: publishable
-only if the controlled evaluation itself is the contribution. Rescoped claim:
+**Frozen question (D-016).** At fixed feature extraction and measured memory budgets, does memory-bank compression disproportionately reduce industrial anomaly segmentation performance on small defects?
 
-> **Rescoped contribution.** A controlled, pre-registered measurement of
-> whether memory-bank compression of training-free patch-memory detectors
-> (PatchCore-style) changes detection and localisation of *small* defects
-> differently from large ones on MVTec AD, at matched memory **bytes**, across
-> selectors (greedy k-centre coreset vs random vs a density/coverage
-> comparator), with category controls, ≥3 paired seeds, and the official
-> AU-PRO. A correction is pursued **only** if the effect exists, and must then
-> beat HR-Pro-style residual coverage, not just PatchCore.
+No method is proposed. In everything we found, the claim has **no direct prior measurement**. Every ingredient exists separately, so the contribution is the controlled measurement itself:
 
-What the paper may NOT claim: a new size-robustness metric (Costanzino et al.
-2025 already defines quartile AU-PRO and ρ); that compression is known to be
-free/harmful (contested, measured only in aggregate); a novel coverage
-correction (HR-Pro, CPD-PatchCore, CleanCon/risk-aware coverage, SuperADD).
+- budget sweeps exist, on aggregate metrics only;
+- size-conditioned metrics exist, at a single memory only.
 
-### Closest papers and the delta (one sentence each)
+What the paper may NOT claim:
 
-| Paper | ✔ | What it shows | Delta to us |
-|---|---|---|---|
-| Roth et al., PatchCore, CVPR 2022, doi:10.1109/CVPR52688.2022.01392 | ✔ Crossref | 1 % / 10 % / 100 % coreset give ≈ equal mean image AUROC, pixel AUROC, PRO; subsampler comparison aggregate-only | We condition its own budget axis on defect area |
-| Kamiya et al., ASO PatchCore, VISAPP 2026, doi:10.5220/0014445100004084 | ✔ Crossref | ≈86 % memory reduction vs 10 % PatchCore with "comparable" aggregate metrics | Prime target: we test whether that parity holds for the smallest-defect strata |
-| Chae et al., ProCon, arXiv 2607.04894 (v1, 2026-07-06) | ✔ arXiv | 1/5/10 % budget sweep and seed-perturbed banks; aggregate P-AP saturates at 5 %; no size conditioning | We condition budget and seed variation on defect area |
-| Costanzino et al., IEEE Access 2025, doi:10.1109/ACCESS.2025.3582900 | ✔ full text read | Cumulative size-quartile AU-PRO@30 %/@5 % and robustness ρ; PatchCore at its **default** memory only; states MVTec AD is comparatively size-stable | We cross their size protocol with memory budget and selector; their MVTec finding is our main null-result risk |
-| Chae et al., arXiv 2608.23295 (2026-08-24) | ✔ arXiv | Selector comparison (random/medoid/farthest-first) at matched K under contamination | Same matched-K methodology; outcome is contamination, not defect size |
-| Feng et al., HR-Pro, IEEE Access 2026, doi:10.1109/ACCESS.2026.3725847 | ✔ Crossref; full text NOT read | Residual normal patches restore coverage in compressed prototype memory | Pre-empts the correction; must be read in full and compared against if Phase 2 happens |
-| Tu, IEEE Access 2026, doi:10.1109/ACCESS.2026.3733273 | ✔ Crossref; full text NOT read | Greedy coreset degrades pixel-level results on MVTec AD 2 (few-shot) | If it stratifies by size, the gap narrows — **open gate item** |
+- a new size metric (Costanzino et al. 2025 already define one);
+- a new compression or coverage method;
+- generality beyond MVTec AD, WRN-50 PatchCore features and the tested selectors.
 
-Protocol-search correction: pass B reported that no paper breaks MVTec AD
-results down by defect size. That is **wrong**; Costanzino et al. do (verified
-in the full text, Sec. IV-A.2 and Tab. 2). Pass A's reading is the correct one.
+### 1.1 Closest works: exact identity and what was actually read
 
-### Risks recorded with the verdict
-1. **Null result on MVTec AD** (Costanzino: size-stable; PatchCore: 1 % ≈ 100 %).
-   Pre-registered response: a properly powered null ("compression to X bytes is
-   size-neutral within ±δ on MVTec AD") is reported as the finding, and the
-   correction is not built (REALITY_CHECK H-01 abandon clause).
-2. **Scoop**: the Chae group publishes matched-budget memory studies monthly.
-   Mitigation: the delta sweep on ~2026-11-08 and at each milestone.
-3. **Single benchmark**: MVTec AD defects are mostly 0.1–10 % of the image.
-   A second dataset (e.g. VisA) would strengthen a size claim but must pass
-   independent access/licence/size/ground-truth/baseline verification first;
-   nothing is added silently.
+| Work | Identity | Primary source | Read | Could it already answer our question? |
+|---|---|---|---|---|
+| **Costanzino et al.**, "Learning to Be a Transformer to Pinpoint Anomalies" | IEEE Access 13:109624–109637, 2025, doi:[10.1109/ACCESS.2025.3582900](https://doi.org/10.1109/ACCESS.2025.3582900); arXiv:2407.04092 v3 | [arXiv PDF v3](https://arxiv.org/pdf/2407.04092v3) | **Full text** (size protocol §IV-A.2–3, Tab. 2 discussion) | **No.** Size-quartile AU-PRO and ρ for PatchCore at its default memory only. No budget or selector varied. See §1.2 |
+| **HR-Pro** (Feng, Hu, Ma, Zhao, He), "HR-Pro: Hierarchical Residual Prototype Memory for Efficient Industrial Anomaly Detection" | IEEE Access 14:134267–134284, 2026, doi:[10.1109/ACCESS.2026.3725847](https://doi.org/10.1109/ACCESS.2026.3725847); IEEE doc 11661333; gold OA, CC BY | [IEEE Xplore](https://ieeexplore.ieee.org/document/11661333/) | **Full text read 2026-10-11** (PDF via IEEE stamp endpoint). Text only: table cells are images, so table **values were not extracted** | **No.** It compares PatchCore at 1/10/25 % against prototype-residual memory using **image and pixel AUROC only** (no PRO). No defect-size stratification. Small defects appear only as a qualitative VisA failure explanation |
+| **Tu (Weilin)**, "Few-Shot Anomaly Detection on MVTec AD 2: A Systematic Study and a Strong Frozen Baseline" | IEEE Access 14:152500–152511, 2026, doi:[10.1109/ACCESS.2026.3733273](https://doi.org/10.1109/ACCESS.2026.3733273); IEEE doc 11687779; gold OA, CC BY | [IEEE Xplore](https://ieeexplore.ieee.org/document/11687779/) | **Full text read 2026-10-11** | **No.** Its "coreset degrades localisation" finding is greedy max-min over **image-level** DINOv2 signatures, picking k ≤ 8 **reference images** in few-shot MVTec AD 2 (§V-E, §VI-C). That is not patch-bank compression. The author states it does not establish behaviour of patch-level compression or larger budgets. No size stratification; defect areas are mentioned only for example images |
+| **BAMB** (Li, Jia, Chen), "BAMB: Unified industrial anomaly detection and classification via a mixed memory bank with boundary-aware coreset selection" | Neurocomputing 708, art. 135250 (issue 2027-01), doi:[10.1016/j.neucom.2026.135250](https://doi.org/10.1016/j.neucom.2026.135250); PII S0925231226026482 | [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0925231226026482) | **NOTHING read beyond the title.** Closed access (Semantic Scholar: CLOSED). No abstract in Crossref or Semantic Scholar. ScienceDirect refused curl, WebFetch and the built-in browser (403 / "problem providing the content") | **Unknown.** "Boundary-aware coreset selection" could involve defect-boundary or size-sensitive selection. See §1.3 |
+| ASO PatchCore (Kamiya, Yamashita, Hotta) | VISAPP 2026, doi:[10.5220/0014445100004084](https://doi.org/10.5220/0014445100004084) | SciTePress PDF | Read by search pass A (reported); title and metadata verified by me on Crossref | No: aggregate parity only |
+| ProCon (Chae et al.) | arXiv:[2607.04894](https://arxiv.org/abs/2607.04894) v1 | arXiv | Pass A full text; abstract verified by me | No: aggregate pixel AP budget sweep |
+| What Memory Composition Does Not Tell Us (Chae, Wang, Qin) | arXiv:[2608.23295](https://arxiv.org/abs/2608.23295) | arXiv | Pass A full text; abstract verified by me | No: outcome is contamination, not size |
 
-## 2. Baseline list (from the matrix; DECISIONS.md D-007)
+### 1.2 Our protocol vs Costanzino et al. (cumulative quartiles, ρ)
+
+| Aspect | Costanzino et al. 2025 | This study |
+|---|---|---|
+| Question | Is a *method* robust to defect size? | Does *compressing the memory* of a fixed method change size-specific performance? |
+| Factor varied | Method (theirs vs PatchCore, SimpleNet, EfficientAD, …) and input resolution | Memory budget (bytes) and selector, with extractor, resolution, precision and scoring **held fixed** |
+| PatchCore memory | Default coreset only | Uncompressed reference, 10 %, 1 %, 0.1 %; greedy vs random; PaDiM byte points |
+| Size groups | **Cumulative** quartiles of the anomaly-size distribution (Q1 ⊂ … ⊂ Q4 = all), so groups overlap | **Disjoint, absolute** bins S/M/L tied to the feature-grid cell (0.1 %, 1 %), comparable across categories and budgets. Quantile bins appear only as a sensitivity analysis |
+| Metric | AU-PRO@30 % and @5 % per quartile set; ρ = w·(1 − \|AUPRO(Q4) − AUPRO(Q1)\| / max) | Bin-restricted official AU-PRO@0.3 (primary) and @0.05; the compression penalty Δ_b; the contrast D = Δ_S − Δ_L |
+| Inference | Point estimates per method | Paired image bootstrap CIs, 3 paired seeds, SESOI with equivalence testing |
+| GT resolution | Full resolution, no centre crop | Same (P-STUDY) |
+
+**Our additional question.** Costanzino's ρ answers "how size-robust is this detector?". It cannot separate memory effects from method effects, because every method has a different memory. Our design holds the detector constant and varies only the memory budget and selector. It asks whether the aggregate parity reported for compressed memories hides a size-specific loss.
+
+Our results can also be re-expressed as ρ per budget, so the two are directly comparable; this is planned as a secondary table. Their finding that MVTec AD is comparatively size-stable for a default PatchCore is the main reason a null result is plausible. The study's equivalence design (H-01.5) makes a null result informative rather than a failure.
+
+### 1.3 Remaining uncertainty and its consequence for the verdict
+
+- **BAMB is unread.** Its title combines "coreset selection" with "boundary-aware", in our target journal family.
+  - If it evaluates coreset compression by defect size or boundary proximity, the gap narrows to "partially answered" and our framing must cite and differentiate it.
+  - **Missing access is not evidence of novelty.** The verdict stays *Crowded* conditional on reading BAMB. We cannot upgrade it, and the gate must list BAMB as unresolved.
+  - To resolve it: you copy the abstract from ScienceDirect in a normal browser, or download the PDF if your access allows. Downloading is your decision.
+- **HR-Pro tables were not machine-read.** Its prose and captions show image and pixel AUROC only. A table-level check is needed to confirm no PRO or size column exists. This is low risk to the verdict.
+- **"DA-Core"** (density-aware coreset) appeared in one search snippet and is unresolved.
+- **The Chae group's monthly output** is the main scoop risk. The next delta sweep is due ~2026-11-08.
+
+## 2. Final baseline list (DECISIONS D-007, D-017)
 
 | Role | Method | Status |
 |---|---|---|
 | Evaluator sanity | constant, random, oracle-mask | implemented (CPU, Phase 0) |
-| Selector control | random normal-memory subsampling at matched bytes | Phase 1 |
-| Published standard | PatchCore, **official code** (Apache-2.0), approx. greedy coreset, WRN-50 L2+L3 | Phase 1 reproduction target |
-| Normal-only density/coverage comparator | PaDiM (Gaussian per position; published 95.3/97.5/92.1) **or** SPADE kNN (uncompressed memory). Choice frozen at Phase 1 start after a CPU code read; both have no official code, so a minimal, tested re-implementation is required and labelled as such | to decide (gate item) |
-| Strongest training-free memory comparator | ProCon — **no licence file** in the author repo, so code cannot be reused; cite its numbers, re-implementation only if justified | related work |
-| Distillation comparator | EfficientAD — **excluded from experiments**: no official code; exact reproduction needs ImageNet for teacher distillation and the per-step penalty; Imagenette substitutes do not reproduce (anomalib 98.2/97.5 vs 98.8/99.1). Cite its published no-crop numbers | related work |
+| Primary system under study | PatchCore features (official recipe, WRN-50 L2+L3, 1024-d), **uncompressed reference** | Phase 1 |
+| Compression arms | official approximate greedy k-centre coreset at 10 / 1 / 0.1 % (bytes reported) | Phase 1 |
+| Selector control | uniform random patch subset at matched bytes | Phase 1 |
+| Density comparator | **PaDiM** (WR50, Rd100 and Rd550 byte points), minimal re-implementation from the paper, reproduction-checked | Phase 1 |
+| Reproduction checks | PatchCore under P-REPRO (published 99.1–99.2 / 98.1); P-STUDY AU-PRO vs 92.7; PaDiM vs 95.3 / 97.5 / 92.1 | Phase 1 |
+| Cited, not run | ProCon (no licence), EfficientAD (needs ImageNet, no official code), SPADE (subsumed by the uncompressed reference), HR-Pro / ASO / Lite variants (different memory designs; cited as aggregate-parity evidence) | related work |
 
 ## 3. Venues (pass C, rerun after a network failure, 2026-10-11)
 

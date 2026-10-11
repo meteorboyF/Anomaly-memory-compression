@@ -16,7 +16,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from anomaly_memory.data import mvtec  # noqa: E402
 from anomaly_memory.data.preprocess import GeometryPolicy  # noqa: E402
-from anomaly_memory.data.profile import ROW_FIELDS, profile_record, summarise  # noqa: E402
+from anomaly_memory.data.profile import ROW_FIELDS, bin_counts, mask_checks, profile_record, summarise  # noqa: E402
+from anomaly_memory.eval.strata import StrataSpec  # noqa: E402
 from anomaly_memory.io_utils import atomic_write_json, read_json  # noqa: E402
 from anomaly_memory.paths import local_root  # noqa: E402
 from anomaly_memory.runctx import RunContext, ToolSpec, run_tool  # noqa: E402
@@ -28,6 +29,7 @@ class Config:
     extracted_dirname: str
     categories: list[str]
     geometry: GeometryPolicy
+    strata: StrataSpec
     connectivity: int = 8
     seed: int = 0
 
@@ -71,6 +73,17 @@ def body(ctx: RunContext) -> dict:
     summary["split_hash"] = mvtec.split_hash(records)
     summary["geometry_policy"] = dataclasses.asdict(cfg.geometry)
     summary["validation_warnings"] = report.warnings
+    summary["preregistered_bin_counts"] = bin_counts(rows, cfg.strata.area_fraction_edges, cfg.strata.labels)
+    summary["mask_checks"] = mask_checks(rows)
+    summary["split_checks"] = {
+        "train_only_good": all(r.label == 0 for r in records if r.split == "train"),
+        "good_images_have_no_mask": all(r.mask_relpath is None for r in records if r.label == 0),
+        "every_defective_has_mask": all(r.mask_relpath for r in records if r.label == 1),
+    }
+    if not all(summary["split_checks"].values()):
+        raise RuntimeError(f"split check failed: {summary['split_checks']}")
+    if summary["mask_checks"]["non_binary_masks"]:  # a data finding (masks are read as >0), not a tool failure
+        ctx.log(f"WARNING non-binary masks: {summary['mask_checks']['non_binary_masks'][:10]}")
     csv_path = ctx.work_dir / "profile_per_image.csv"
     with open(csv_path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=ROW_FIELDS)
@@ -93,7 +106,14 @@ def body(ctx: RunContext) -> dict:
             f"{summary['defects_with_pixels_outside_crop']}")
     ctx.log(f"exact duplicates: files {summary['exact_file_duplicates']['n_duplicate_groups']} groups "
             f"({summary['exact_file_duplicates']['n_cross_split_groups']} cross-split)")
-    return {"totals": t, "dataset_hash": summary["dataset_hash"], "split_hash": summary["split_hash"],
+    bc = summary["preregistered_bin_counts"]
+    ctx.log(f"pre-registered bins {bc['labels']}: regions {bc['totals']['regions']}, images by largest "
+            f"{bc['totals']['images_by_largest']}, mixed images {bc['totals']['mixed_images']}")
+    for cat, c in bc["per_category"].items():
+        ctx.log(f"  {cat:11s} regions {c['regions']}  images {c['images_by_largest']}  mixed {c['mixed_images']}")
+    return {"preregistered_bin_counts": bc, "split_checks": summary["split_checks"],
+            "n_non_binary_masks": len(summary["mask_checks"]["non_binary_masks"]),
+            "totals": t, "dataset_hash": summary["dataset_hash"], "split_hash": summary["split_hash"],
             "n_erased_by_policy": len(summary["erased_by_policy"]),
             "defect_area_fraction_quantiles": summary["defect_area_fraction_quantiles"],
             "duplicates": {k: summary[k]["n_duplicate_groups"] for k in ("exact_file_duplicates",

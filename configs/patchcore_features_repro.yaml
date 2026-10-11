@@ -1,0 +1,23 @@
+# P-REPRO extraction: reproduction of published PatchCore numbers only.
+# PROVISIONAL until Phase 1 code exists; blocked by gate + allocation.
+tool: extract_features
+schema_version: 1
+extracted_dirname: mvtec_ad
+categories: [bottle, cable, capsule, carpet, grid, hazelnut, leather, metal_nut, pill, screw, tile, toothbrush, transistor, wood, zipper]
+backbone: wide_resnet50_2
+weights_source: torchvision IMAGENET1K_V1   # weights only (SHA-256 recorded); no ImageNet images
+layers: [layer2, layer3]
+patchsize: 3
+feature_dim: 1024
+geometry:
+  # P-REPRO: PatchCore official preprocessing; reproduction check only, never in H-01
+  name: patchcore_repro_r256_c224
+  resize: 256
+  crop: 224
+  image_interp: bilinear
+  mask_interp: bilinear
+  mask_threshold: 0.999
+precision: fp32
+batch_size: 8
+chunk_images: 64
+est_gpu_hours: 0.25

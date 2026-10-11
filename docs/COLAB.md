@@ -26,9 +26,9 @@ The notebook `notebooks/runner.ipynb` is a thin wrapper:
    - Re-running prints `verified archive already on Drive … skipping download`.
 5. **Run Cell 3 (CPU checks).**
    - `metric_selfcheck`: must print `metric self-check PASSED`.
-   - `profile_data`: dataset hash, split hash, defect-area quantiles, erased-by-crop counts, duplicates.
-   - `evaluator_sanity`: constant/random give ≈0.5 AUROC and ≈0.15 AU-PRO; oracle gives 1.0, minus any defects erased by the crop.
-   - `evaluator_sanity_native`: the native-resolution protocol, the most memory-heavy step. If the CPU runtime runs out of RAM, report it; the fix is a code change, not a bigger runtime.
+   - `profile_data`: dataset hash, split hash, split checks, mask value sets, defect-area quantiles, erased-by-crop counts, exact duplicates (including cross-split leakage), and per category the pre-registered **S/M/L region counts**, images by largest component and mixed-size images. Modest RAM.
+   - `evaluator_sanity` (224 crop): constant/random give ≈0.5 AUROC and ≈0.15 AU-PRO; oracle gives 1.0, minus any defects erased by the crop.
+   - `evaluator_sanity_native` (study protocol): the most memory-heavy step. The largest category (screw, 160 × 1024² test pixels) needs about 8.5 GB RAM, extrapolated from a laptop measurement. A standard CPU runtime has about 12.7 GB. If it dies with an out-of-memory error, send me the log; do not switch to a GPU runtime.
 6. **Run Cell 11** (status + artifact verification), then *Runtime → Disconnect and delete runtime*.
 7. **Send me** the outputs of Cells 2, 3 and 11. A copy of every log is also on Drive under `artifacts/logs/`.
 

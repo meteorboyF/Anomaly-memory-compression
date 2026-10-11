@@ -13,4 +13,10 @@ geometry:
   image_interp: bilinear
   mask_interp: bilinear
   mask_threshold: 0.999
+strata:
+  # PRE-REGISTERED (REALITY_CHECK H-01): S <0.1%, M 0.1-1%, L >=1% of image pixels, per component
+  area_fraction_edges: [0.0, 0.001, 0.01, 1.0]
+  labels: [S, M, L]
+  min_images_per_cell: 10
+  min_images_pooled: 30
 connectivity: 8

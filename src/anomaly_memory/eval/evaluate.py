@@ -15,6 +15,7 @@ from . import metrics, predictions, strata
 @dataclasses.dataclass
 class MetricSpec:
     pro_integration_limit: float = 0.3
+    secondary_integration_limit: float = 0.05  # MVTec AD 2 convention, more sensitive to small defects
     connectivity: int = 8
     category_average: str = "macro"  # unweighted mean over categories, as in the literature
 
@@ -55,21 +56,39 @@ def evaluate_category(root: Path, recs: list[Record], pred_path: Path, policy: G
         "n_test": len(test), "n_defective": int(labels.sum()), "n_erased_by_policy": int(erased.sum()),
         "image_auroc": metrics.auroc(scores, labels),
         "pixel_auroc": metrics.pixel_auroc(maps, masks),
-        "au_pro": metrics.au_pro(maps, masks, mspec.pro_integration_limit, mspec.connectivity),
     }
+    # one global sort serves the aggregate curve and every region-size bin (identical to separate calls)
+    filters = {"all": None}
+    if sspec is not None:
+        n_px = masks.shape[1] * masks.shape[2]
+        e = sspec.area_fraction_edges
+        for i, lab in enumerate(sspec.labels):
+            last = i == len(sspec.labels) - 1
+            filters[lab] = (lambda a, lo=e[i], hi=e[i + 1], last=last:
+                            lo <= a / n_px < hi or (last and a / n_px == hi))
+    curves = metrics.pro_curves_shared(maps, masks, filters, mspec.connectivity)
+
+    def area(c, lim):
+        return float("nan") if c is None else metrics.trapezoid(c[0], c[1], x_max=lim) / lim
+    res["au_pro"] = area(curves["all"], mspec.pro_integration_limit)
+    res["au_pro_secondary"] = area(curves["all"], mspec.secondary_integration_limit)
     rows = []
     if sspec is not None:
-        st = np.where(labels == 1, strata.assign(native_frac, sspec), -1)
+        # PRIMARY (H-01): region-level strata, every 8-connected component in its own size bin
+        res["region_strata"] = [
+            {"stratum": lab, "n_regions": 0 if curves[lab] is None else curves[lab][2],
+             "reportable": curves[lab] is not None and curves[lab][2] >= sspec.min_images_per_cell,
+             "au_pro": area(curves[lab], mspec.pro_integration_limit),
+             "au_pro_secondary": area(curves[lab], mspec.secondary_integration_limit)}
+            for lab in sspec.labels]
+        # SECONDARY: image-level detection strata; an image takes the bin of its LARGEST component
+        largest = np.array([_largest_component_fraction(m, mspec.connectivity) if l else 0.0
+                            for m, l in zip(masks, labels)])
+        st = np.where(labels == 1, strata.assign(largest, sspec), -1)
         img = strata.stratified_image_auroc(scores, labels, st, len(sspec.labels))
-        pro = strata.stratified_au_pro(maps, masks, labels, st, len(sspec.labels), mspec.pro_integration_limit,
-                                       mspec.connectivity)
-        cells = []
-        for a, b in zip(img, pro):
-            ok = a["n_defective"] >= sspec.min_images_per_cell
-            cells.append({"stratum": sspec.labels[a["stratum"]], "n_defective": a["n_defective"],
-                          "n_normal": a["n_normal"], "reportable": ok,
-                          "image_auroc": a["image_auroc"], "au_pro": b["au_pro"]})
-        res["strata"] = cells
+        res["strata"] = [{"stratum": sspec.labels[a["stratum"]], "n_defective": a["n_defective"],
+                          "n_normal": a["n_normal"], "reportable": a["n_defective"] >= sspec.min_images_per_cell,
+                          "image_auroc": a["image_auroc"]} for a in img]
     else:
         st = np.full(len(test), -1)
     for r, s, sc, fr, er in zip(test, st, scores, native_frac, erased):
@@ -78,6 +97,12 @@ def evaluate_category(root: Path, recs: list[Record], pred_path: Path, policy: G
                      "stratum": (sspec.labels[s] if sspec is not None and s >= 0 else ""),
                      "erased_by_policy": bool(er)})
     return res, rows
+
+
+def _largest_component_fraction(mask: np.ndarray, connectivity: int) -> float:
+    from scipy import ndimage
+    lab, n = ndimage.label(mask, structure=metrics.structure_for(connectivity))
+    return float(np.bincount(lab.ravel())[1:].max() / mask.size) if n else 0.0
 
 
 def macro_average(per_cat: dict[str, dict], key: str) -> float:

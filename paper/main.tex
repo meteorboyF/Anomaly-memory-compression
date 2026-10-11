@@ -92,11 +92,14 @@ distributions~\citep{bertoldo2024aupimo};
 \item synthetic studies of the minimum detectable defect
 size~\citep{lehr2024limitations}.
 \end{itemize}
-Few-shot evaluation on MVTec AD~2, a benchmark with many small defects,
-reports that greedy coreset references degrade pixel-level
-results~\citep{tu2026fewshotmvtecad2}.
-\todo{Read the full texts of \citet{tu2026fewshotmvtecad2} and
-\citet{feng2026hrpro} before submission; refine both sentences.}
+In few-shot evaluation on MVTec AD~2, greedy max--min selection of a handful
+of \emph{reference images} lowered pixel-level performance relative to random
+selection~\citep{tu2026fewshotmvtecad2}; this concerns image-level reference
+selection rather than patch-memory compression, and no size breakdown is
+reported. Compact prototype memories are likewise evaluated with aggregate
+image- and pixel-level AUROC~\citep{feng2026hrpro}.
+\todo{BAMB (boundary-aware coreset, Neurocomputing 2027) unread; cite and
+differentiate once read.}
 
 \paragraph{Protocol variation}
 Published numbers on MVTec AD are often not comparable. Implementations
@@ -114,10 +117,12 @@ inconsistencies~\citep{baitieva2025beyond,rochner2025rethink}. We therefore
 fix and report the protocol explicitly (Section~\ref{sec:protocol}).
 
 \paragraph{Gap}
-No study we found conditions the effect of memory compression on defect
-size at matched memory bytes, with selector controls and seed replication.
-This is the gap the present study addresses; its search log is in the
-repository (\texttt{docs/LITERATURE.md}).
+Size-conditioned evaluation has so far compared \emph{methods} at their
+default memories~\citep{costanzino2025pinpoint}, while compression studies
+report aggregate metrics. We hold the detector fixed and vary only the
+memory budget and selector, asking whether aggregate parity hides a
+size-specific loss. The study is empirical; it proposes no new method. Its
+search log is in the repository (\texttt{docs/LITERATURE.md}).
 
 \section{Experimental protocol}\label{sec:protocol}
 \todo{Phase 1: P-REPRO and P-STUDY definitions (DECISIONS D-004/D-005),

@@ -62,7 +62,7 @@ ProCon is related work only: its author repo has no licence file (GitHub API, 20
 
 It is cited in related work with its published no-crop numbers.
 
-**D-009 (2026-10-11) What gets stored.**
+**D-009 (2026-10-11; storage part SUPERSEDED by D-018) What gets stored.**
 - **Not cached:** full backbone features. At P-STUDY resolution, train patches alone are ≈3.7 M × 1536 dims × 2 B ≈ 11 GB, while extraction is cheap compared with coreset selection.
 - **Persisted per (category, selector, seed):** coreset index lists, which are tiny and define each bank given the features.
 - **Persisted per test image:** raw patch-level score grids (the kNN distances before upsampling and smoothing), at e.g. 32×32 float32 ≈ 4 KB per image.
@@ -97,3 +97,50 @@ This keeps raw predictions for free re-scoring at roughly 7 MB per run instead o
 **D-014 (2026-10-11) Acquisition route.** The tool resolves the link from the official downloads page on each run and falls back to the recorded URL only with a printed warning. The overview page's "fill in the form" is an open question for the researcher (DATA.md).
 
 **D-015 (2026-10-11) Phase 0 runs no accelerator work.** Measuring backbone throughput is deferred to the approved pilot. All cost figures in COMPUTE_LEDGER are provisional until then.
+
+**D-016 (2026-10-11, researcher's instruction) Topic frozen as an empirical study.**
+- Frozen topic: "At fixed feature extraction and measured memory budgets, does memory-bank compression disproportionately reduce industrial anomaly segmentation performance on small defects?"
+- The contribution is a controlled empirical study.
+- The earlier "coverage-preserving correction" is **withdrawn**. Any later method needs separate evidence, a separate literature review and separate approval.
+- H-02 is deleted. The mechanism analysis remains as descriptive, exploratory reporting only (REALITY_CHECK H-01.6).
+
+**D-017 (2026-10-11) Density comparator: PaDiM (not SPADE).**
+- **A different memory family.** PaDiM is a parametric, normal-only density memory: a per-position Gaussian whose footprint does not depend on the training-set size. It is therefore a genuinely different compression family from exemplar subsampling.
+- **Its own byte knob.** Its random channel reduction (Rd100 vs Rd550 in the paper) gives explicit, measurable byte points to place on the same bytes-vs-size-stratified-AU-PRO plot.
+- **Verified published numbers.** WR50-Rd550 reports detection AUROC 95.3 and localisation AUROC/PRO 97.5/92.1 (Defard et al., read 2026-10-11), which gives a reproduction check.
+- **Why not SPADE.** SPADE is exemplar kNN over the full memory. That is already covered by our uncompressed PatchCore-feature reference, so it would add little. Its published numbers are also weaker (85.5 detection; 96.5/91.7 localisation).
+- **Caveats.** There is no official PaDiM code, so we write a minimal re-implementation from the paper, tested on CPU, and label it as such. PaDiM assumes aligned objects; that is reported, not tuned around.
+- **Role.** PaDiM is a comparator only. It does not enter the primary contrast, which stays within one fixed extractor.
+
+**D-018 (2026-10-11) Feature caching and resumability (supersedes the storage part of D-009).**
+- **Execution unit** = (category, protocol). One job per category:
+  1. Extract features once (seed-independent: frozen backbone, no augmentation).
+  2. Cache them on Colab local disk, keyed by `features/cache.py` (dataset hash, split hash, geometry, weights SHA, layers, aggregation, precision, code hash).
+  3. Run every seed × selector × budget × scoring from that cache.
+- **Persisted to Drive (atomically):**
+  - the greedy coreset state every N picks (selected indices + running min-distance vector, ≤ 2 MB), so a long hazelnut selection resumes mid-run;
+  - final coreset indices (tiny);
+  - raw 32×32 score grids (≈4 KB/image);
+  - per-arm manifests.
+- **Not persisted by default:** full feature tensors. P-STUDY features are ≈15 GB (train) + ≈7 GB (test) at fp32, against minutes of re-extraction per category. They are copied to Drive only if you confirm the Drive space, and only within the approved allocation.
+- **Reuse:** extraction once per category instead of once per arm × seed. With nested coresets (D-011), one greedy run per (category, seed) yields every budget. A resumed job skips completed (category, arm, seed) units after manifest validation.
+
+**D-019 (2026-10-11) Memory accounting.** See REALITY_CHECK H-01.1:
+- fp32 vectors plus the measured serialized index overhead;
+- the selection-time projection is excluded but reported;
+- PaDiM is counted from its stored mean and inverse-covariance arrays;
+- backbone weights are excluded from per-arm bytes.
+
+**D-020 (2026-10-11) Statistics.**
+- Paired, stratified image bootstrap. The same resampled images apply to every arm and seed; categories are fixed strata; seeds are averaged, with a sign-consistency requirement.
+- Single primary test.
+- SESOI δ = 2.0 AU-PRO points; equivalence by TOST using the 90 % CI.
+- Explicit "inconclusive" category: non-significance is never reported as equivalence.
+- Implemented in `eval/stats.py` and tested on synthetic data.
+
+**D-021 (2026-10-11) Size unit.**
+- Primary: 8-connected component at native resolution, with S/M/L bins at 0.1 % and 1 % of image pixels. The S boundary equals one feature cell at 256 px.
+- Multi-defect images are handled through the region filter.
+- Secondary image-level bins use the largest component, plus a mixed-image exclusion analysis.
+
+**D-022 (2026-10-11) Pilot outcome blinding.** No size-stratified comparison is computed from pilot outputs. Only throughput, resume reliability, manifest validity and pipeline sanity are inspected.

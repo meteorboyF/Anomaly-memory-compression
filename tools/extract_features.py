@@ -28,6 +28,8 @@ class Config:
     backbone: str
     weights_source: str
     layers: list[str]
+    patchsize: int
+    feature_dim: int
     geometry: GeometryPolicy
     precision: str
     batch_size: int

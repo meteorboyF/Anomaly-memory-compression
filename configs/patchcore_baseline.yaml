@@ -1,10 +1,12 @@
-# PROVISIONAL (Phase 1). Blocked by gate + allocation.
+# H-01 arms on cached P-STUDY features. PROVISIONAL until Phase 1 code exists; blocked by gate + allocation.
 tool: run_baseline
 schema_version: 1
 features_config: patchcore_features
-method: patchcore_greedy_coreset
-coreset_ratio: 0.1
+reference: uncompressed
+budgets: [0.1, 0.01, 0.001]     # nested greedy prefixes; random selector matched in bytes
+selectors: [greedy_kcenter_approx, random]
 projection_dim: 128
+starting_points: 10
 neighbours: 1
 seeds: [0, 1, 2]
 est_gpu_hours: 0.5

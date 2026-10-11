@@ -1,23 +1,23 @@
-# PROVISIONAL (Phase 1). Blocked by gate + allocation. Values to be frozen from the
-# official PatchCore code/paper before the first accelerator run.
+# Frozen P-STUDY extraction for H-01 (official PatchCore recipe, no crop).
+# PROVISIONAL until Phase 1 code exists; blocked by gate + allocation.
 tool: extract_features
 schema_version: 1
 extracted_dirname: mvtec_ad
 categories: [bottle, cable, capsule, carpet, grid, hazelnut, leather, metal_nut, pill, screw, tile, toothbrush, transistor, wood, zipper]
 backbone: wide_resnet50_2
-weights_source: torchvision IMAGENET1K_V1   # weights only; no ImageNet images are downloaded
+weights_source: torchvision IMAGENET1K_V1   # weights only (SHA-256 recorded); no ImageNet images
 layers: [layer2, layer3]
+patchsize: 3
+feature_dim: 1024
 geometry:
-  # PatchCore official preprocessing (datasets/mvtec.py): Resize(256) -> CenterCrop(224) for image AND
-  # mask; torchvision bilinear on the PIL mask, then .astype(int) floors partial pixels -> only fully
-  # covered pixels stay anomalous (threshold 0.999 reproduces the floor of k/255).
-  name: patchcore_repro_r256_c224
+  # P-STUDY (REALITY_CHECK H-01.1): 256x256, no crop, native-resolution GT
+  name: study_r256_nocrop
   resize: 256
-  crop: 224
+  crop: null
   image_interp: bilinear
-  mask_interp: bilinear
-  mask_threshold: 0.999
+  mask_interp: nearest
+  mask_threshold: 0.5
 precision: fp32
 batch_size: 8
 chunk_images: 64
-est_gpu_hours: 0.5
+est_gpu_hours: 0.25

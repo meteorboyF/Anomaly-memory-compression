@@ -65,7 +65,7 @@ def body(ctx: RunContext) -> dict:
         per_cat[cat] = res
         rows += r
         ctx.log(f"{cat:11s} img {res['image_auroc']:.4f} pix {res['pixel_auroc']:.4f} aupro {res['au_pro']:.4f}")
-    macro = {k: macro_average(per_cat, k) for k in ("image_auroc", "pixel_auroc", "au_pro")}
+    macro = {k: macro_average(per_cat, k) for k in ("image_auroc", "pixel_auroc", "au_pro", "au_pro_secondary")}
     out = ctx.work_dir / "metrics.json"
     atomic_write_json(out, {"metric_version": METRIC_VERSION, "per_category": per_cat, "macro": macro})
     ctx.register(out, kind="metrics")

@@ -25,6 +25,7 @@ ROW_FIELDS = (
     "native_area_px", "native_area_fraction", "native_components", "native_min_component_px",
     "native_max_component_px", "policy_area_px", "policy_area_fraction", "policy_components",
     "erased_by_policy", "native_px_outside_crop", "components_fully_outside_crop",
+    "mask_values", "component_area_fractions",
 )
 
 
@@ -43,8 +44,12 @@ def profile_record(root: Path, r: Record, policy: GeometryPolicy, connectivity: 
            "label": r.label, "width": w, "height": h, "mode": mode, "file_sha256": fsha, "pixel_sha256": psha}
     if r.mask_relpath is None:
         row.update({k: 0 for k in ROW_FIELDS if k not in row})
-        row["erased_by_policy"] = False
+        row.update(erased_by_policy=False, mask_values="", component_area_fractions="")
         return row
+    from PIL import Image
+    with Image.open(root / r.mask_relpath) as mk:
+        raw = np.asarray(mk)
+    values = np.unique(raw)
     m = load_mask(root / r.mask_relpath)
     st = structure_for(connectivity)
     lab, n = ndimage.label(m, structure=st)
@@ -65,8 +70,59 @@ def profile_record(root: Path, r: Record, policy: GeometryPolicy, connectivity: 
         "policy_area_px": int(pm.sum()), "policy_area_fraction": float(pm.mean()), "policy_components": int(pn),
         "erased_by_policy": bool(m.any() and not pm.any()), "native_px_outside_crop": outside_px,
         "components_fully_outside_crop": fully_out,
+        "mask_values": ";".join(str(int(v)) for v in values[:16]),
+        # native-resolution 8-connected component sizes as fractions of image pixels (strata unit)
+        "component_area_fractions": ";".join(f"{a / m.size:.8g}" for a in (areas if n else [])),
     })
     return row
+
+
+def component_fractions(row: dict) -> list[float]:
+    v = row.get("component_area_fractions") or ""
+    return [float(x) for x in v.split(";") if x]
+
+
+def bin_counts(rows: list[dict], edges: list[float], labels: list[str]) -> dict:
+    """Outcome-free counts per category and pre-registered bin.
+
+    Region level: every native 8-connected component counts in its own bin.
+    Image level: a defective image is assigned the bin of its LARGEST component;
+    an image whose components fall into more than one bin is also counted as mixed.
+    """
+    inner = np.asarray(edges[1:-1])
+
+    def b(f):
+        return labels[int(np.searchsorted(inner, f, side="right"))]
+
+    out: dict = {}
+    for r in rows:
+        if not r["label"]:
+            continue
+        fr = component_fractions(r)
+        c = out.setdefault(r["category"], {"regions": {l: 0 for l in labels},
+                                           "images_by_largest": {l: 0 for l in labels},
+                                           "mixed_images": 0, "images_without_components": 0})
+        if not fr:
+            c["images_without_components"] += 1
+            continue
+        bins = {b(f) for f in fr}
+        for f in fr:
+            c["regions"][b(f)] += 1
+        c["images_by_largest"][b(max(fr))] += 1
+        c["mixed_images"] += int(len(bins) > 1)
+    totals = {"regions": {l: sum(c["regions"][l] for c in out.values()) for l in labels},
+              "images_by_largest": {l: sum(c["images_by_largest"][l] for c in out.values()) for l in labels},
+              "mixed_images": sum(c["mixed_images"] for c in out.values())}
+    return {"edges": list(edges), "labels": list(labels), "per_category": dict(sorted(out.items())),
+            "totals": totals}
+
+
+def mask_checks(rows: list[dict]) -> dict:
+    """Masks must be binary {0,255} (or {0,1}); defective images must have a non-empty mask."""
+    nonbinary = [r["relpath"] for r in rows if r["label"] and r["mask_values"]
+                 and not set(r["mask_values"].split(";")) <= {"0", "255", "1"}]
+    return {"non_binary_masks": nonbinary,
+            "value_sets": dict(Counter(r["mask_values"] for r in rows if r["label"]))}
 
 
 def summarise(rows: list[dict]) -> dict:

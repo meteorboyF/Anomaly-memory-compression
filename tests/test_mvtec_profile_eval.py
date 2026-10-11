@@ -48,6 +48,12 @@ def test_profile_and_summary(fake_mvtec):
     d = [r for r in rows if r["label"]]
     assert all(r["native_components"] == 1 and r["native_area_fraction"] > 0 for r in d)
     assert s["exact_file_duplicates"]["n_duplicate_groups"] == 0
+    from anomaly_memory.data.profile import bin_counts, mask_checks
+    # fake squares: side 2,8 (crack) and 8,14 (hole) px on 64x64 -> 0.1%,1.6%,1.6%,4.8%
+    bc = bin_counts(rows, [0.0, 0.01, 1.0], ["S", "L"])
+    assert bc["per_category"]["bottle"]["regions"] == {"S": 1, "L": 3}
+    assert bc["per_category"]["bottle"]["images_by_largest"] == {"S": 1, "L": 3}
+    assert mask_checks(rows)["non_binary_masks"] == []
 
 
 def test_predictions_roundtrip_and_validation(tmp_path):
@@ -87,7 +93,9 @@ def test_tool_harness_end_to_end(fake_mvtec, isolated_env, monkeypatch):
     cfgdir.mkdir()
     geom = "geometry: {name: t, resize: 32, crop: 28}\n"
     (cfgdir / "p.yaml").write_text("tool: profile_data\nschema_version: 1\nextracted_dirname: mvtec_ad\n"
-                                   "categories: [bottle, carpet]\n" + geom)
+                                   "categories: [bottle, carpet]\n" + geom +
+                                   "strata: {area_fraction_edges: [0.0, 0.02, 1.0], labels: [s, l], "
+                                   "min_images_per_cell: 1, min_images_pooled: 1}\n")
     (cfgdir / "e.yaml").write_text(
         "tool: evaluator_sanity\nschema_version: 1\nextracted_dirname: mvtec_ad\ncategories: [bottle, carpet]\n"
         "kinds: [constant, oracle_mask]\n" + geom + "metric: {}\n"

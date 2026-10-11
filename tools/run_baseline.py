@@ -22,9 +22,11 @@ from anomaly_memory.runctx import ToolSpec, phase_blocked_body, run_tool  # noqa
 class Config:
     SCHEMA_VERSION = 1
     features_config: str
-    method: str
-    coreset_ratio: float
+    reference: str  # "uncompressed" (fallback "coreset_0.25" only if declared before the full grid)
+    budgets: list[float]  # fractions of train patches; greedy runs once to max, smaller are prefixes
+    selectors: list[str]  # "greedy_kcenter_approx", "random"
     projection_dim: int
+    starting_points: int
     neighbours: int
     seeds: list[int]
     est_gpu_hours: float

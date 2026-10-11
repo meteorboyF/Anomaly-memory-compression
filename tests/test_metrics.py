@@ -98,3 +98,20 @@ def test_region_stratified_au_pro():
     res = {r["stratum"]: r for r in S.region_stratified_au_pro(maps, gt, spec)}
     assert res["S"]["n_regions"] == 1 and res["L"]["n_regions"] == 1
     assert res["L"]["au_pro"] > 0.99 and res["S"]["au_pro"] < res["L"]["au_pro"]
+
+
+def test_shared_curves_equal_separate_calls():
+    g = np.random.default_rng(3)
+    gt = np.zeros((5, 30, 30))
+    gt[0, 1, 1] = 1
+    gt[0, 10:16, 10:16] = 1
+    gt[1, 3:5, 20:23] = 1
+    gt[2, 15:27, 2:14] = 1
+    maps = np.round(g.random(gt.shape) + 0.5 * gt, 2)
+    n_px = 900
+    filt = {"all": None, "S": lambda a: a / n_px < 0.01, "L": lambda a: a / n_px >= 0.01}
+    shared = M.pro_curves_shared(maps, gt, filt)
+    for k, f in filt.items():
+        fp, pr = M.pro_curve(maps, gt, region_filter=f)
+        np.testing.assert_allclose(shared[k][0], fp, atol=1e-12)
+        np.testing.assert_allclose(shared[k][1], pr, atol=1e-12)

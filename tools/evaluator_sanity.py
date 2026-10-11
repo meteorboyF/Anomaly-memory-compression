@@ -75,7 +75,7 @@ def body(ctx: RunContext) -> dict:
             ctx.log(f"{kind:12s} {cat:11s} img {res['image_auroc']:.4f} pix {res['pixel_auroc']:.4f} "
                     f"aupro {res['au_pro']:.4f} erased {res['n_erased_by_policy']}")
         results[kind] = {"per_category": per_cat,
-                         "macro": {k: macro_average(per_cat, k) for k in ("image_auroc", "pixel_auroc", "au_pro")}}
+                         "macro": {k: macro_average(per_cat, k) for k in ("image_auroc", "pixel_auroc", "au_pro", "au_pro_secondary")}}
         csv_path = ctx.work_dir / f"per_image_{kind}.csv"
         with open(csv_path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(all_rows[0].keys()))

@@ -168,3 +168,48 @@ def image_scores_from_maps(anomaly_maps, reduce: str = "max") -> np.ndarray:
 
 
 METRIC_VERSION = "mvtec-official-replica-v1"
+
+
+def pro_curves_shared(anomaly_maps, gt_masks, region_filters: dict, connectivity: int = 8) -> dict:
+    """PRO curves for several region filters with ONE global sort (identical to
+    calling ``pro_curve`` per filter). ``region_filters`` maps a name to
+    ``None`` (all regions) or a predicate on region area in pixels."""
+    a = _stack(anomaly_maps)
+    g = _stack(gt_masks) > 0
+    if a.shape != g.shape:
+        raise ValueError(f"map/mask shape mismatch {a.shape} vs {g.shape}")
+    st = structure_for(connectivity)
+    labels = np.zeros(g.shape, dtype=np.int32)
+    areas_all, offset = [0], 0
+    for i in range(g.shape[0]):
+        lab, n = ndimage.label(g[i], structure=st)
+        if n:
+            areas_all.extend(np.bincount(lab.ravel(), minlength=n + 1)[1:].tolist())
+            labels[i] = np.where(lab > 0, lab + offset, 0)
+            offset += n
+    areas = np.asarray(areas_all, dtype=np.float64)  # index 0 = background
+    scores = a.reshape(-1)
+    if scores.dtype not in (np.float32, np.float64):
+        scores = scores.astype(np.float32)
+    order = np.argsort(scores, kind="stable")[::-1]
+    s_sorted = scores[order]
+    keep = np.append(np.diff(s_sorted) != 0, True)
+    del s_sorted
+    lab_sorted = labels.reshape(-1)[order]
+    del order
+    out = {}
+    for name, filt in region_filters.items():
+        sel = np.ones(len(areas), bool) if filt is None else np.array([filt(int(x)) for x in areas])
+        sel[0] = False
+        n_regions = int(sel.sum())
+        if n_regions == 0:
+            out[name] = None
+            continue
+        is_ok = lab_sorted == 0
+        n_ok = int(is_ok.sum())
+        w = np.where(sel, 1.0 / np.maximum(areas, 1), 0.0)
+        fprs = np.cumsum(is_ok, dtype=np.int64)[keep] / n_ok
+        pros = np.cumsum(w[lab_sorted])[keep] / n_regions
+        out[name] = (np.concatenate(([0.0], np.clip(fprs, None, 1.0), [1.0])),
+                     np.concatenate(([0.0], np.clip(pros, None, 1.0), [1.0])), n_regions)
+    return out

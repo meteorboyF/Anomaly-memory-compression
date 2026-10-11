@@ -1,71 +1,67 @@
 # STATE — single source of truth (update every session)
 
-_Last updated: 2026-10-11, end of session 1._
+_Last updated: 2026-10-11, session 2._
 
-## Frozen topic (D-001)
+## Frozen topic (D-016, researcher-approved wording)
 
-- **Problem:** compressing the normal-feature memory in industrial anomaly detection may preserve aggregate benchmark scores while disproportionately reducing sensitivity to small defects.
-- **Hypothesis:** at matched memory budgets, compression changes how well normal-feature neighbourhoods are covered, and this disproportionately affects small-defect sensitivity. A normal-data-only coverage strategy may improve the trade-off.
-- **Intended contribution:** a controlled study of memory compression versus detection and localisation conditioned on defect area. A coverage-preserving correction follows only if experiments support the mechanism.
-- **Benchmark:** original MVTec AD, all 15 categories, official splits, existing pixel masks.
+> At fixed feature extraction and measured memory budgets, does memory-bank compression disproportionately reduce industrial anomaly segmentation performance on small defects?
 
-**Phase 0 novelty verdict: CROWDED, rescoped.** See LITERATURE §1. The diagnostic study is the contribution. The correction is conditional and must beat HR-Pro-style residual coverage.
+- **Benchmark:** original MVTec AD, 15 categories, official splits, existing masks.
+- **Contribution:** a controlled empirical study, pre-registered in REALITY_CHECK H-01 v2.
+- **No correction or method is promised.** Any future method needs separate evidence, literature review and approval.
 
-## Phase: 0 (literature + feasibility). Gate NOT yet approved.
+Novelty verdict: **CROWDED, rescoped**, conditional on reading BAMB (LITERATURE §1.3).
 
-Accelerator use: **0 CU**. `configs/control/gates.yaml` has all phases unapproved. `allocations.yaml` is empty, so every GPU tool refuses.
+## Phase 0: in progress. Gate NOT approved. Accelerator use: 0 CU.
 
-### Done (verified on the laptop)
+`configs/control/gates.yaml` has every phase unapproved. `allocations.yaml` is empty, so all GPU tools refuse.
 
-- [x] Playbook read, including the brainstorm notes. The playbook's resource assumptions are overridden (D-001).
-- [x] Repository skeleton and harness, with 75 CPU tests passing:
-  - strict configs, manifests with `complete` written last;
-  - experiment identity from config + scientific code;
-  - budget preflight and wall-clock guard;
-  - acquisition tool, profile, evaluator, trivial baselines;
-  - Colab driver and control CLI, notebook generator;
-  - pre-commit guard and CI workflow.
-- [x] Acquisition live path checked against the real publisher: link resolved from the downloads page; size and ETag match. No download was run locally.
-- [x] Metric replica matches MVTec's official evaluation code (max deviation 3e-8). This is a laptop run from a dirty tree and is not citable; the citable run is Colab Cell 3.
-- [x] Literature protocol: about 130 logged queries across two passes, a 15-row closest-paper matrix, and personal verification of the decisive papers.
-- [x] Pre-registration H-01 (strata, metrics, tests, falsification, mechanism check) and pilot proposal H-00.
-- [x] Manuscript skeleton on elsarticle v3.5 compiles; Related Work drafted.
+### Completed (with evidence)
 
-### Pending: needs the researcher
+| Item | Evidence |
+|---|---|
+| Infrastructure, safeguards, Colab runner | 80 CPU tests; CI green; cold clone passes; pre-commit hook refused a planted token |
+| Metric replica vs official MVTec code | Laptop run: max deviation 3e-8. A **citable** run comes from Colab Cell 3 |
+| Size-stratified evaluator: one global sort, every bin and both FPR limits | Equals separate per-bin official computations (test). Native-resolution cost measured: ≈52 MB and ≈0.4 s per 1024² image |
+| Paired bootstrap / equivalence statistics | `eval/stats.py`, synthetic tests (effect detected; null classified as equivalent; inconclusive rule) |
+| Literature | 3 passes plus full-text reading of Costanzino, HR-Pro and Tu 2026 |
+| Protocol, pre-registration, baselines | H-01 v2 complete; PaDiM chosen (D-017) |
+| Venue | Pattern Recognition first (D-010) |
 
-1. Run Colab Cells 1–3 on a **CPU** runtime (docs/COLAB.md) and send the output.
-2. Decide on MVTec's "fill in the form" (DATA.md, access question).
-3. Tell me the **CU/hour Colab displays for a T4** (or the balance before and after a batch), so the pilot's CU ceiling can be set without assuming a rate.
-4. Approve or reject the Phase 0 gate and the pilot allowance (COMPUTE_LEDGER).
+### Blockers and pending items
 
-### Open Phase 0 items (agent side)
-
-- Venue decided (D-010): Pattern Recognition first. JCR quartile/IF still unverified (publisher pages blocked our fetchers).
-- Read in full: BAMB (boundary-aware coreset, Neurocomputing 2026/27); resolve "DA-Core" density-aware coreset.
-- Full text of Tu 2026 and HR-Pro: both are open access, but our fetchers could not read IEEE Xplore. The researcher could download the two PDFs into `~/Research/papers/` for me to read.
-- Choose the density comparator (PaDiM vs SPADE) by reading their code on CPU at the start of Phase 1.
+1. **CPU data verification (Colab Cells 1→2→3→11). NOT yet run.** None of these items is complete until its output is checked:
+   - [ ] archive downloaded, our SHA-256 recorded, Drive copy re-verified, marker written
+   - [ ] 15 categories present; per-category counts equal IJCV Table 1 (3629 / 467 / 1258)
+   - [ ] every defective test image has a mask; no orphan masks; image and mask sizes equal
+   - [ ] split checks: train contains only `good`; good test images have no mask
+   - [ ] leakage: exact file and pixel duplicates across train/test and across categories
+   - [ ] mask value sets binary
+   - [ ] dataset_hash and split_hash recorded
+   - [ ] pre-registered S/M/L counts per category (regions, images by largest component, mixed images), then the merge rule applied if needed
+   - [ ] citable metric self-check (clean SHA)
+   - [ ] evaluator sanity: P-REPRO crop and native P-STUDY (constant ≈0.15 AU-PRO, oracle 1.0)
+   - [ ] Cell 11 artifact verification
+2. **BAMB unread** (closed access; no abstract anywhere we can reach). The novelty verdict is conditional on it.
+3. **No Colab CU rate observed yet.** The pilot's CU cap cannot be set.
+4. **Your decisions:** the Phase 0 gate, the pilot allocation, and MVTec's form question.
+5. **Phase 1 code** (extraction, coreset, scoring, PaDiM) is written only after gate approval.
 
 ## Exact next commands
 
-Colab, CPU runtime:
+Colab, **CPU** runtime:
 
 ```
-Cell 1  (setup)  ->  Cell 2  (acquire_data --config acquire_mvtec_ad)
-Cell 3  (metric_selfcheck, profile_data, evaluator_sanity, evaluator_sanity_native)
-Cell 11 (status + verify), then Runtime > Disconnect and delete runtime
+Cell 1  -> Cell 2 (acquire_data) -> Cell 3 (metric_selfcheck, profile_data,
+evaluator_sanity, evaluator_sanity_native) -> Cell 11; then Runtime > Disconnect and delete runtime
 ```
 
-Laptop, after the Colab run (to mirror small results into the repo for the paper), with Drive synced or the manifests copied locally:
+Then paste the outputs into chat. Drive keeps a copy of every log under `artifacts/logs/`.
 
-```
-.venv/bin/python tools/sync_results.py --from <path to Drive artifacts/manifests>
-.venv/bin/python scripts/make_tables.py && .venv/bin/python scripts/make_figures.py
-```
+## What the units bought
 
-## What the units bought this week
+Nothing. No units have been spent.
 
-Nothing: no units were spent. That is by design for Phase 0.
+## Next single most important question
 
-## Next session's single most important question
-
-Does the outcome-free profile show enough small (<0.1 %) and large (≥1 %) defect regions per category for H-01's pre-registered strata to be testable on MVTec AD alone? If not, apply the merge rule now, before any model output exists.
+Do the mask-derived S/M/L counts allow ≥5 categories with ≥10 S **and** ≥10 L regions? If not, the pre-registered merge ("<1 %" vs "≥1 %") applies before any model output exists.
