@@ -1,10 +1,10 @@
 %% Manuscript skeleton on Elsevier's official elsarticle class (v3.5, 2026/01/09).
-%% Target: Pattern Recognition or Neurocomputing (docs/DECISIONS.md D-010).
+%% Target: Pattern Recognition (fallback Neurocomputing), docs/DECISIONS.md D-010.
 %% Every number comes from generated/results_macros.tex (scripts/make_tables.py);
 %% no result is typed by hand. Writing order: Related Work (Phase 0) ->
 %% Method/Experiments (Phase 1) -> Results (Phase 2, per supported claim) ->
 %% Introduction and Abstract last.
-\documentclass[preprint,12pt,authoryear]{elsarticle}
+\documentclass[preprint,review,12pt]{elsarticle}
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}  % Type 1 fonts: vector, embeddable
@@ -153,7 +153,7 @@ and the scripts that generate every figure and table are available at
 \url{https://github.com/meteorboyF/Anomaly-memory-compression}
 \todo{match the journal's required wording}.
 
-\bibliographystyle{elsarticle-harv}
+\bibliographystyle{elsarticle-num}
 \bibliography{refs}
 
 \end{document}

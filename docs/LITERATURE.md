@@ -72,9 +72,20 @@ in the full text, Sec. IV-A.2 and Tab. 2). Pass A's reading is the correct one.
 | Strongest training-free memory comparator | ProCon — **no licence file** in the author repo, so code cannot be reused; cite its numbers, re-implementation only if justified | related work |
 | Distillation comparator | EfficientAD — **excluded from experiments**: no official code; exact reproduction needs ImageNet for teacher distillation and the per-step penalty; Imagenette substitutes do not reproduce (anomalib 98.2/97.5 vs 98.8/99.1). Cite its published no-crop numbers | related work |
 
-## 3. Venues (pass C)
+## 3. Venues (pass C, rerun after a network failure, 2026-10-11)
 
-See §Venues appendix and DECISIONS.md D-010.
+Recommendation: **Pattern Recognition first, Neurocomputing as fallback** (DECISIONS D-010).
+Anchors verified by me on Crossref:
+- MMFNet: Pattern Recognition 172, art. 112581 (2026), doi:10.1016/j.patcog.2025.112581.
+- MP-DRA: Neurocomputing 655, art. 131427 (2025), doi:10.1016/j.neucom.2025.131427.
+
+SJR 2025 Q1 for both journals and the review-speed figures come from search snippets only, because Scimago and ScienceDirect returned 403. **JCR quartile and impact factor are NOT verified.** SJR Q1 is not JCR Q1.
+APCs are from Elsevier's official price list (05-Oct-2026): PR USD 3,120, Neurocomputing USD 2,660. Both journals are hybrid; the subscription route costs nothing.
+
+Newly surfaced in the venue scan, to read in full in the Phase 1 delta sweep:
+- BAMB (Neurocomputing 708, art. 135250, doi:10.1016/j.neucom.2026.135250): "boundary-aware coreset selection". No abstract was retrievable.
+- Learnable product quantization for AD (Neurocomputing 582, art. 127532, doi:10.1016/j.neucom.2024.127532).
+- "DA-Core" density-aware coreset: mentioned in a search snippet, not yet resolved.
 
 ---
 
@@ -659,3 +670,127 @@ See matrix (§D). Summary: PaDiM — no official code (only unofficial xiahaifen
 | 68 | 2026-10-11 | gh search issues + gh issue view | patchcore-inspection "PRO" (#26, #53), "center crop" (#5) | 3 | RD4AD PRO gives 92.9 vs 94.9 |
 | 69 | 2026-10-11 | curl | RD4AD test.py compute_pro | 1 | binned, renormalised by max FPR |
 | 70 | 2026-10-11 | GitHub API | patchcore-inspection commits | 1 | last commit 2023-03-06 |
+
+
+---
+
+## Appendix C — venue pass C, 2026-10-11, full record
+
+### Venue verification: Pattern Recognition vs Neurocomputing (Elsevier)
+
+Date of all checks: 2026-10-11 (live fetches only). Verification grade legend:
+- **V-primary** = read directly from publisher / Crossref / CTAN / Clarivate-cited source.
+- **V-snippet** = only seen in a web-search snippet that quotes the official page (page itself returned 403). Treat as likely but re-check by hand.
+- **U** = unverified / conflicting.
+
+#### 1. Search log
+
+| # | date | query / URL | result |
+|---|------|-------------|--------|
+| 1 | 2026-10-11 | api.crossref.org/works?query.title=MMFNet multi-scale memory fusion ... | HIT: 10.1016/j.patcog.2025.112581, alt-id S0031320325012440 (pii matches) |
+| 2 | 2026-10-11 | api.crossref.org/works?query.title=MP-DRA multi-scale memory ... | HIT: 10.1016/j.neucom.2025.131427, alt-id S0925231225020995 (pii matches) |
+| 3 | 2026-10-11 | api.crossref.org/journals/0031-3203/works?query.bibliographic=memory bank industrial anomaly detection MVTec / PatchCore coreset / unsupervised industrial AD localization, from 2024-01-01 | 45 rows; relevant ones selected (sec. 4) |
+| 4 | 2026-10-11 | api.crossref.org/journals/0925-2312/works?... same 3 queries | 45 rows; relevant ones selected (sec. 4) |
+| 5 | 2026-10-11 | doi.org content negotiation (Accept: application/x-bibtex) for 12 DOIs | all 12 returned BibTeX |
+| 6 | 2026-10-11 | WebFetch scimagojr.com/journalsearch.php?q=0031-3203 and q=0925-2312 | 403 |
+| 7 | 2026-10-11 | curl (browser UA) same Scimago URLs | 403 |
+| 8 | 2026-10-11 | WebFetch scimagojr.com ...q=24807&tip=sid | 403 |
+| 9 | 2026-10-11 | Built-in browser scimagojr.com ...q=24823&tip=sid | Cloudflare bot check; stopped (no CAPTCHA bypass) |
+| 10 | 2026-10-11 | WebSearch "Pattern Recognition journal scimago SJR 2025 quartile..." | snippet: SJR 2025 = 2.147, Q1 Artificial Intelligence, Q1 Computer Vision and Pattern Recognition, H-index 267 (Scimago sid 24823) |
+| 11 | 2026-10-11 | WebSearch "Neurocomputing scimago SJR 2025 quartile..." | snippet: SJR 2025 = 1.465, Q1 Artificial Intelligence, Q1 Computer Science Applications, H-index 233 (Scimago sid 24807) |
+| 12 | 2026-10-11 | WebFetch sciencedirect.com/journal/pattern-recognition/about/insights | 403 |
+| 13 | 2026-10-11 | WebFetch elsevier.com/journals/pattern-recognition/0031-3203/guide-for-authors | 301 -> sciencedirect (blocked) |
+| 14 | 2026-10-11 | WebFetch sciencedirect.com/journal/pattern-recognition/publish/guide-for-authors | 403; built-in browser also blocked ("There was a problem providing the content") |
+| 15 | 2026-10-11 | WebFetch ctan.org/pkg/elsarticle | v3.5, 2026-01-09, LPPL 1.3, maintainer C. V. Radhakrishnan |
+| 16 | 2026-10-11 | curl ctan.org/tex-archive/macros/latex/contrib/elsarticle | files: elsarticle.cls, elsarticle-num.bst, elsarticle-harv.bst, elsarticle-num-names.bst, 3 templates, elsdoc |
+| 17 | 2026-10-11 | WebFetch shop.elsevier.com/journals/pattern-recognition/0031-3203 | aims & scope; "single-column, double-spaced, 20-35 pages (40 for reviews)"; 12 issues/yr |
+| 18 | 2026-10-11 | WebFetch shop.elsevier.com/journals/neurocomputing/0925-2312 | aims & scope (theory/practice/applications of neural nets & learning systems; applications incl. image processing, computer vision); Software Track |
+| 19 | 2026-10-11 | WebFetch elsevier.com/researcher/author/policies-and-guidelines/latex-instructions | elsarticle is the recommended class; template ZIP; Overleaf (TeX Live 2022) ok; bib styles bundled |
+| 20 | 2026-10-11 | curl elsevier.com/about/policies-and-standards/pricing -> legacyfileshare.elsevier.com/els_com_pricing/article-publishing-charge.xlsx | Official APC list "Prices as of date: 05-Oct-2026": Pattern Recognition Hybrid OA USD 3120 / EUR 2850 / GBP 2500; Neurocomputing Hybrid OA USD 2660 / EUR 2430 / GBP 2130 (excl. taxes) |
+| 21 | 2026-10-11 | WebSearch PR guide for authors highlights/graphical abstract/review | snippet (from official GfA): 20-35 pp (40 review) single col double spaced; highlights 3-5 bullets <=85 chars, separate file; graphical abstract encouraged; single anonymized review |
+| 22 | 2026-10-11 | WebSearch Neurocomputing guide for authors review/highlights/reference | snippet: single anonymized; highlights 3-5 bullets <=85 chars (encouraged); "Your Paper Your Way" - any consistent reference style at submission; 7 article types, Type 1 Regular article |
+| 23 | 2026-10-11 | WebSearch PR guide: data availability / generative AI | snippet: GenAI-use declaration required at submission; data availability statement expected |
+| 24 | 2026-10-11 | WebSearch PR insights review speed | snippet from sciencedirect insights: 18 d to first decision, 110 d to decision after review, 250 d to acceptance, 5 d acceptance->online; same snippet says IF 7.6, CiteScore 15.8, APC USD 2,800 -> STALE (APC contradicts row 20) |
+| 25 | 2026-10-11 | WebSearch Neurocomputing insights review speed | snippet: 9 d to first decision, 77 d to decision after review, 192 d to acceptance (staleness unknown) |
+| 26 | 2026-10-11 | en.wikipedia.org/wiki/Pattern_Recognition_(journal) | JIF 9.1 for 2025, cited to "2025 Journal Citation Reports", Clarivate (wording ambiguous: may be JCR release 2025 = JIF 2024) |
+| 27 | 2026-10-11 | en.wikipedia.org/wiki/Neurocomputing_(journal) | JIF 5.5 for 2023, cited to 2023 JCR (Clarivate, 2024) - outdated |
+| 28 | 2026-10-11 | WebSearch JCR 2026 PR/Neurocomputing JIF | only third-party aggregators (PR 9.1, Neuro 6.5) - not Clarivate |
+| 29 | 2026-10-11 | WebSearch elsarticle-num / -harv | elsdoc: num = numerical, harv = author-year (natbib), num-names = numerical with names |
+
+#### 2. Journal comparison
+
+| Item | Pattern Recognition (0031-3203) | Neurocomputing (0925-2312) | Grade |
+|---|---|---|---|
+| Publisher / model | Elsevier, Hybrid OA (subscription route = no fee) | Elsevier, Hybrid OA (subscription route = no fee) | V-primary (APC xlsx, row 20) |
+| OA APC | USD 3,120 excl. tax (as of 05-Oct-2026) | USD 2,660 excl. tax (as of 05-Oct-2026) | V-primary (row 20) |
+| SJR (Scimago) | 2025: SJR 2.147; Q1 Artificial Intelligence; Q1 Computer Vision and Pattern Recognition; H 267 | 2025: SJR 1.465; Q1 Artificial Intelligence; Q1 Computer Science Applications; H 233 | V-snippet (Scimago blocked by 403/Cloudflare) |
+| JCR (Clarivate) JIF | 9.1 per Wikipedia citing "2025 JCR" (likely JIF-2024). JCR quartile not verified | 5.5 (JIF 2023) per Wikipedia; newer value not verified | U for current; never equate SJR Q1 with JCR Q1 |
+| Aims & scope fit | Theory, methodology and applications of pattern recognition; explicitly underpins computer vision / image processing. Industrial visual AD with methodological analysis (compression vs small-defect sensitivity) fits well; journal already publishes MMFNet, S3AD, memory-retrieval AD, feature-compression AD | Neural networks & learning systems: theory, practice, applications incl. image processing and computer vision. Fits; GfA says regular submissions must be directly relevant to neural networks and/or learning systems, so frame around learned feature representations | V-primary (shop.elsevier.com) |
+| Article types | Original articles, reviews, pedagogical pieces, special issues | 7 types; Type 1 = Regular article; also Software Track | V-primary (PR); V-snippet (Neuro) |
+| Length | 20-35 pages (40 for reviews), single column, double spaced, numbered pages | Not verified | V-primary (PR); U (Neuro) |
+| Highlights | 3-5 bullets, <=85 chars each incl. spaces, separate editable file with "highlights" in name | 3-5 bullets <=85 chars (encouraged) | V-snippet |
+| Graphical abstract | Encouraged | Not verified | V-snippet / U |
+| Review model | Single anonymized | Single anonymized | V-snippet |
+| Data availability statement | Expected (Data Availability section) | Listed in GfA ("data statement", "research data") - exact wording unverified | V-snippet |
+| Declarations | Generative-AI use declaration at submission; competing-interest declaration (standard Elsevier) assumed but not read | GfA has a "generative AI" section; details unverified | V-snippet / U |
+| LaTeX | elsarticle (Elsevier generic); no journal-specific template verified | elsarticle (Elsevier generic); no journal-specific template verified | V-primary (Elsevier LaTeX page) |
+| Reference style | Not verified from GfA (published PR papers use numbered style -> elsarticle-num is the safe choice) | "Your Paper Your Way": any consistent style at submission; published style numbered -> elsarticle-num | U (PR) / V-snippet (Neuro) |
+| Review speed | 18 d first decision; 110 d decision after review; 250 d to acceptance; 5 d acceptance->online | 9 d first decision; 77 d decision after review; 192 d to acceptance | V-snippet, possibly stale (same PR snippet carried old APC/IF) |
+
+#### 3. elsarticle
+
+- CTAN: https://ctan.org/pkg/elsarticle - version **3.5 (2026-01-09)**, licence **LPPL 1.3**, maintainer C. V. Radhakrishnan; in TeX Live and MiKTeX. (V-primary)
+- Files (CTAN dir): elsarticle.cls; elsarticle-num.bst (numbered), elsarticle-harv.bst (author-year, natbib), elsarticle-num-names.bst (numbered with names); templates elsarticle-template-{num,harv,num-names}.tex; docs elsdoc.pdf. (V-primary)
+- Elsevier LaTeX instructions: https://www.elsevier.com/researcher/author/policies-and-guidelines/latex-instructions - elsarticle is the recommended class, template ZIP from Elsevier, Overleaf OK (verify compile). (V-primary)
+- Recommendation: `\documentclass[preprint,12pt]{elsarticle}` (or `review` option for double spacing to meet PR's "double spaced" rule), `\bibliographystyle{elsarticle-num}`, `\journal{Pattern Recognition}` / `\journal{Neurocomputing}`.
+
+#### 4. BibTeX (all from doi.org content negotiation, 2026-10-11)
+
+Fit anchors:
+
+```bibtex
+@article{Wang_2026, title={MMFNet: A multi-scale memory fusion network based on simulated abnormal samples for anomaly detection}, volume={172}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2025.112581}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Wang, Pengxiang and Qin, Yuhua and Zong, Xulin and Wang, Chaoyue and Zhang, Hao}, year={2026}, month=apr, pages={112581} }
+
+@article{Shao_2025, title={MP-DRA: Multi-scale memory and adaptive pseudo-anomaly enhanced open-set anomaly detection}, volume={655}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2025.131427}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Shao, Yunxue and Xu, Fangdi and Wang, Lingfeng}, year={2025}, month=nov, pages={131427} }
+```
+
+Pattern Recognition, related 2024-2026:
+
+```bibtex
+@article{Peng_2026, title={S3AD: Efficient industrial anomaly detection via selection, space, and scale}, volume={179}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2026.113868}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Peng, Zhonghua and Dong, Chengyang and Liu, Bo and Li, Zuoyong and Zeng, Kun and Li, Jialong}, year={2026}, month=nov, pages={113868} }
+
+@article{Hu_2026, title={Efficient industrial anomaly detection via cross-scale distillation with enhanced feature compression}, volume={173}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2025.112761}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Hu, Ronglong and Yi, Jizheng and Li, Xiaoyao and Chen, Aibin and Han, Guangjie}, year={2026}, month=may, pages={112761} }
+
+@article{Guo_2026, title={A memory and retrieval transformer-based unsupervised learning model for anomaly detection and segmentation}, volume={174}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2025.113004}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Guo, Jiawei and Song, Ge and Wang, Yi}, year={2026}, month=jun, pages={113004} }
+
+@article{Yang_2024, title={SLSG: Industrial image anomaly detection with improved feature embeddings and one-class classification}, volume={156}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2024.110862}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Yang, Minghui and Liu, Jing and Yang, Zhiwei and Wu, Zhaoyang}, year={2024}, month=dec, pages={110862} }
+
+@article{Zhou_2026, title={One-shot unsupervised industrial anomaly detection: Enhanced performance under extreme data scarcity}, volume={173}, ISSN={0031-3203}, DOI={10.1016/j.patcog.2025.112759}, journal={Pattern Recognition}, publisher={Elsevier BV}, author={Zhou, Jiayin and Wong, Waikeung and Liao, Fangjian}, year={2026}, month=may, pages={112759} }
+```
+
+Neurocomputing, related 2024-2026:
+
+```bibtex
+@article{Li_2027, title={BAMB: Unified industrial anomaly detection and classification via a mixed memory bank with boundary-aware coreset selection}, volume={708}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2026.135250}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Li, Yangyi and Jia, Ke and Chen, Qianzeng}, year={2027}, month=jan, pages={135250} }
+
+@article{Luo_2024, title={DMMGNet: A discrimination mapping and memory bank mean guidance-based network for high-performance few-shot industrial anomaly detection}, volume={610}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2024.128622}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Luo, Aoshuang and Wen, Guojun and Cheng, Yahui and Mei, Shuang and Dong, Hongbo and Liu, Xingyue}, year={2024}, month=dec, pages={128622} }
+
+@article{Zhang_2024, title={Learnable product quantization for anomaly detection}, volume={582}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2024.127532}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Zhang, Shi and Chen, Weilin and Lu, Binlong and Lai, Huixia}, year={2024}, month=may, pages={127532} }
+
+@article{Hua_2026, title={Joint decision normalizing flow based on frequency separation for industrial anomaly detection and localization}, volume={668}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2025.132206}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Hua, Xingzhao and Chen, Yu and Hu, Yueming and Chen, Yili and Yan, Zhenting and Han, Jun and Huang, HuiLing}, year={2026}, month=mar, pages={132206} }
+
+@article{Huang_2025, title={KD-KI: Knowledge distillation with knowledge infusion for anomaly detection and localization}, volume={656}, ISSN={0925-2312}, DOI={10.1016/j.neucom.2025.131423}, journal={Neurocomputing}, publisher={Elsevier BV}, author={Huang, Wei and Xu, Zhaonan and Wan, Rongchun and Yang, Xuhua and Zhang, Bingyang}, year={2025}, month=dec, pages={131423} }
+```
+
+Notes: Elsevier uses article numbers, not pages; the `pages` field holds the article number. BAMB (vol 708) is dated Jan 2027 in Crossref (online-first). Relevance judged from titles only (abstracts not read).
+
+#### 5. Unverified / gaps
+
+1. Scimago pages themselves (403 + Cloudflare); SJR 2025 values/quartiles come only from search snippets. Neurocomputing may also have a third Scimago category (e.g. Cognitive Neuroscience) not shown in snippet.
+2. Current Clarivate JCR JIF and JCR quartile for both journals (only Wikipedia-cited 9.1 for PR and an outdated 5.5 JIF-2023 for Neurocomputing; aggregator "6.5" not trusted).
+3. CiteScore (snippet said 15.8 for PR but from a stale snippet).
+4. Review-speed figures: snippet-only, staleness unknown.
+5. Neurocomputing length limit, graphical-abstract policy, exact data-statement and declaration wording.
+6. Pattern Recognition required reference style (numbered assumed from published papers, not read in GfA); competing-interest declaration form.
+7. Whether either journal currently requires double-anonymized submission for any track (snippets say single anonymized for both).
+8. Full guide-for-authors text for both journals (ScienceDirect blocked to WebFetch, curl, and the built-in browser).

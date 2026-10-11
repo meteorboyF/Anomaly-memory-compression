@@ -40,7 +40,8 @@ Accelerator use: **0 CU**. `configs/control/gates.yaml` has all phases unapprove
 
 ### Open Phase 0 items (agent side)
 
-- Venue verification pass (in progress at the time of writing; see D-010).
+- Venue decided (D-010): Pattern Recognition first. JCR quartile/IF still unverified (publisher pages blocked our fetchers).
+- Read in full: BAMB (boundary-aware coreset, Neurocomputing 2026/27); resolve "DA-Core" density-aware coreset.
 - Full text of Tu 2026 and HR-Pro: both are open access, but our fetchers could not read IEEE Xplore. The researcher could download the two PDFs into `~/Research/papers/` for me to read.
 - Choose the density comparator (PaDiM vs SPADE) by reading their code on CPU at the start of Phase 1.
 

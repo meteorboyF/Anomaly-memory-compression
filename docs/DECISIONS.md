@@ -70,7 +70,12 @@ It is cited in related work with its published no-crop numbers.
 
 This keeps raw predictions for free re-scoring at roughly 7 MB per run instead of GBs. Memory cost is reported in bytes (dtype × vectors × dims + index overhead) per D-012.
 
-**D-010 (pending venue pass) Target venue.** Candidates are Pattern Recognition and Neurocomputing (Elsevier, elsarticle). The decision is recorded after the venue verification. The manuscript skeleton uses elsarticle now, so either fits.
+**D-010 (2026-10-11) Target venue: Pattern Recognition first, Neurocomputing as fallback.**
+- **Pattern Recognition:** the scope covers computer vision and pattern-analysis methodology. It recently published memory-bank AD work (MMFNet, verified). Requirements: 20–35 pages, single column, double spaced (shop.elsevier.com).
+- **Neurocomputing:** cheaper open access and a faster first decision (snippet only). Fit requires framing around learned representations.
+- **Template:** elsarticle v3.5 (LPPL 1.3); there is no journal-specific template. The skeleton switches to numbered references (`elsarticle-num`), as PR papers use.
+- **Cost route:** subscription, so no APC.
+- **Still unverified:** JCR quartile and impact factor; PR's mandated reference style; exact declaration wording. To be checked in a normal browser before submission.
 
 **D-011 (2026-10-11) Nested greedy coresets.**
 - The official `ApproximateGreedyCoresetSampler` loop picks the argmax of the running min-distance each iteration, and its only dependence on the target count is when it stops.
